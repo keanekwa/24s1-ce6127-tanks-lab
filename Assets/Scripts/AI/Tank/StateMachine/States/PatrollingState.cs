@@ -38,7 +38,7 @@ namespace CE6127.Tanks.AI
             if (m_TankSM.Target != null)
             {
                 var dist = Vector3.Distance(m_TankSM.transform.position, m_TankSM.Target.position);
-                if (dist <= m_TankSM.TargetDistance)
+                if (dist <= m_TankSM.StopDistance)
                     m_StateMachine.ChangeState(m_TankSM.m_States.Idle);
             }
 
