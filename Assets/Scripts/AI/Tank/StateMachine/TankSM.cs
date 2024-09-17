@@ -110,10 +110,7 @@ namespace CE6127.Tanks.AI
 
             SetNavMeshAgent();
 
-            TargetDistance = Random.Range(StartToTargetDist.x, StartToTargetDist.y);
-            StopDistance = Random.Range(StopAtTargetDist.x, StopAtTargetDist.y);
-
-            SetStopDistanceToTarget();
+            TargetDistance = 20f;
 
             var tankManagers = GameManager.PlayerPlatoon.Tanks.Take(1);
             if (tankManagers.Count() != 0)

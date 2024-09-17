@@ -21,6 +21,8 @@ namespace CE6127.Tanks.AI
         /// </summary>
         public override void Enter() => base.Enter();
 
+        private float timer = 0;
+
         /// <summary>
         /// Method <c>Update</c> is called each frame.
         /// </summary>
@@ -33,13 +35,22 @@ namespace CE6127.Tanks.AI
                 var dist = Vector3.Distance(m_TankSM.transform.position, m_TankSM.Target.position);
                 if (dist > m_TankSM.TargetDistance)
                     m_StateMachine.ChangeState(m_TankSM.m_States.Patrolling);
-                // ... Just for demonstration purposes; more to be implemented.
             }
 
             var lookPos = m_TankSM.Target.position - m_TankSM.transform.position;
             lookPos.y = 0f;
             var rot = Quaternion.LookRotation(lookPos);
             m_TankSM.transform.rotation = Quaternion.Slerp(m_TankSM.transform.rotation, rot, m_TankSM.OrientSlerpScalar);
+
+            if (timer < 0.2)
+            {
+                timer += Time.deltaTime;
+            }
+            else
+            {
+                m_TankSM.LaunchProjectile(20f);
+                timer = 0;
+            }
         }
     }
 }

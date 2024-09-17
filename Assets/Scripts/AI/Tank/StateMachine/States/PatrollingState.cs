@@ -26,8 +26,6 @@ namespace CE6127.Tanks.AI
         {
             base.Enter();
 
-            m_TankSM.SetStopDistanceToZero();
-
             m_TankSM.StartCoroutine(Patrolling());
         }
 
@@ -40,7 +38,7 @@ namespace CE6127.Tanks.AI
             if (m_TankSM.Target != null)
             {
                 var dist = Vector3.Distance(m_TankSM.transform.position, m_TankSM.Target.position);
-                if (dist <= m_TankSM.StopDistance) // ... Obviously this doesn't make much sense, but it's just for demonstration purposes.
+                if (dist <= m_TankSM.TargetDistance)
                     m_StateMachine.ChangeState(m_TankSM.m_States.Idle);
             }
 
@@ -68,11 +66,11 @@ namespace CE6127.Tanks.AI
         {
             while (true)
             {
-                var destination = Random.insideUnitCircle * Random.Range(m_TankSM.PatrolMaxDist.x, m_TankSM.PatrolMaxDist.y);
-                m_Destination = m_TankSM.transform.position + new Vector3(destination.x, 0f, destination.y);
+                // var destination = Random.insideUnitCircle * Random.Range(m_TankSM.PatrolMaxDist.x, m_TankSM.PatrolMaxDist.y);
+                m_Destination = m_TankSM.Target.position;
 
-                float waitInSec = Random.Range(m_TankSM.PatrolWaitTime.x, m_TankSM.PatrolWaitTime.y);
-                yield return new WaitForSeconds(waitInSec);
+                // float waitInSec = Random.Range(m_TankSM.PatrolWaitTime.x, m_TankSM.PatrolWaitTime.y);
+                yield return new WaitForSeconds(0.1f);
             }
         }
     }
