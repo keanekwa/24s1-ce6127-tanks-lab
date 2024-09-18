@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 using Debug = UnityEngine.Debug;
@@ -11,7 +10,6 @@ namespace CE6127.Tanks.AI
     internal class IdleState : BaseState
     {
         private TankSM m_TankSM; // Reference to the tank state machine.
-        private Vector3 m_Destination;  // Destination for the tank to move to.
 
         /// <summary>
         /// Constructor <c>IdleState</c> is the constructor of the class.
@@ -21,12 +19,7 @@ namespace CE6127.Tanks.AI
         /// <summary>
         /// Method <c>Enter</c> is called when the state is entered.
         /// </summary>
-        public override void Enter()
-        {
-            base.Enter();
-
-            m_TankSM.StartCoroutine(Moving());
-        }
+        public override void Enter() => base.Enter();
 
         private float timer = 0;
 
@@ -44,12 +37,6 @@ namespace CE6127.Tanks.AI
                     m_StateMachine.ChangeState(m_TankSM.m_States.Patrolling);
             }
 
-            if (Time.time >= m_TankSM.NavMeshUpdateDeadline)
-            {
-                m_TankSM.NavMeshUpdateDeadline = Time.time + m_TankSM.PatrolNavMeshUpdate;
-                m_TankSM.NavMeshAgent.SetDestination(m_Destination);
-            }
-
             var lookPos = m_TankSM.Target.position - m_TankSM.transform.position;
             lookPos.y = 0f;
             var rot = Quaternion.LookRotation(lookPos);
@@ -63,25 +50,6 @@ namespace CE6127.Tanks.AI
             {
                 m_TankSM.LaunchProjectile(17f);
                 timer = 0;
-            }
-        }
-
-        public override void Exit()
-        {
-            base.Exit();
-
-            m_TankSM.StopCoroutine(Moving());
-        }
-
-        IEnumerator Moving()
-        {
-            while (true)
-            {
-                
-                m_Destination = m_TankSM.transform.position + new Vector3(10f, 10f, 10f);
-
-                // float waitInSec = Random.Range(m_TankSM.PatrolWaitTime.x, m_TankSM.PatrolWaitTime.y);
-                yield return new WaitForSeconds(0.1f);
             }
         }
     }
