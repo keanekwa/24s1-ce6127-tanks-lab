@@ -72,5 +72,6 @@ public class Tank03ScriptingTheTankMovement : MonoBehaviour
         float turn = moveTurnInputValue.x * turnSpeed * Time.deltaTime;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         rbody.MoveRotation(rbody.rotation * turnRotation);
+        //Debug.Log("Tank will hit at: " + rbody.position);
     }
 }

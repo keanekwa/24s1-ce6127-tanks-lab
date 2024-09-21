@@ -61,6 +61,7 @@ namespace CE6127.Tanks.AI
 
                 // Add an explosion force.
                 targetRigidbody.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius);
+                //Debug.Log("Transform Position"+transform.position);
 
                 // Find the TankHealth script associated with the rigidbody.
                 TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();

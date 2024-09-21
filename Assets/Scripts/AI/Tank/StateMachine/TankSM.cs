@@ -17,11 +17,17 @@ namespace CE6127.Tanks.AI
             // States:
             public IdleState Idle;
             public PatrollingState Patrolling;
+            public AttackState Attack;
+            public RunawayState Runaway;
+            public PatrolattackState Patrolattack;
 
             internal States(TankSM sm)
             {
                 Idle = new IdleState(sm);
                 Patrolling = new PatrollingState(sm);
+                Attack = new AttackState(sm);
+                Runaway = new RunawayState(sm);
+                Patrolattack = new PatrolattackState(sm);
             }
         }
 
@@ -61,6 +67,12 @@ namespace CE6127.Tanks.AI
         public AudioSource SFXAudioSource;                          // Reference to the audio source used to play the shooting audio. NB: different to the movement audio source.
         // public AudioClip ShotChargingAudioClip;                  // Audio that plays when each shot is charging up.
         public AudioClip ShotFiringAudioClip;                       // Audio that plays when each shot is fired.
+
+        public float currHeal;
+
+        public TankHealth tankHealthCurr;
+        public TankHealth tankHealthTar;
+        public ShellExplosion ShellParticleExp;
 
         private bool m_Started = false; // Whether the tank has started moving.
         private Rigidbody m_Rigidbody;  // Reference used to the tank's regidbody.
@@ -107,17 +119,21 @@ namespace CE6127.Tanks.AI
             m_Rigidbody = GetComponent<Rigidbody>();
             NavMeshAgent = GetComponent<NavMeshAgent>();
             m_TankSound = GetComponent<TankSound>();
+            tankHealthCurr = GetComponent<TankHealth>();
+            ShellParticleExp = GetComponent<ShellExplosion>();
 
             SetNavMeshAgent();
 
-            TargetDistance = Random.Range(StartToTargetDist.x, StartToTargetDist.y);
-            StopDistance = Random.Range(StopAtTargetDist.x, StopAtTargetDist.y);
+            TargetDistance = Mathf.Min(StartToTargetDist.x, StartToTargetDist.y);
+            StopDistance = Mathf.Min(StopAtTargetDist.x, StopAtTargetDist.y);
 
             SetStopDistanceToTarget();
 
             var tankManagers = GameManager.PlayerPlatoon.Tanks.Take(1);
             if (tankManagers.Count() != 0)
+            {
                 Target = tankManagers.First().Instance.transform;
+            }
             else
                 Debug.LogError("'Player Platoon' is empty!");
         }
@@ -176,8 +192,10 @@ namespace CE6127.Tanks.AI
         /// <summary>
         /// Method <c>LaunchProjectile</c> instantiate and launch the shell.
         /// </summary>
-        public void LaunchProjectile(float launchForce = 1f)
+        public void LaunchProjectile(float launchForce = 1.0f)
         {
+            // RaycastHit hit;
+            
             launchForce = Mathf.Min(Mathf.Max(LaunchForceMinMax.x, launchForce), LaunchForceMinMax.y);
 
             // Set the fired flag so only Fire is only called once.
@@ -185,13 +203,30 @@ namespace CE6127.Tanks.AI
 
             // Create an instance of the shell and store a reference to it's rigidbody.
             Rigidbody shellInstance = Instantiate(Shell, FireTransform.position, FireTransform.rotation) as Rigidbody;
-
+            
             // Set the shell's velocity to the launch force in the fire position's forward direction.
-            shellInstance.velocity = launchForce * FireTransform.forward; ;
+            //Debug.Log("Shell will hit at: " + shellInstance.transform.position);
+            shellInstance.velocity = launchForce * FireTransform.forward; 
 
+            // Vector3 direction = shellInstance.velocity.normalized;
             // Change the clip to the firing clip and play it.
             SFXAudioSource.clip = ShotFiringAudioClip;
             SFXAudioSource.Play();
+            // if (shellInstance.SweepTest(direction, out hit, 1000))
+            // {
+            //     Vector3 localImpactPoint = a.InverseTransformPoint(hit.point);
+            //     Debug.Log("Shell will hit at: " + hit.point+localImpactPoint);
+            //     return hit.point;
+            // }
+            // else
+            // {
+            //     Debug.Log("No collision detected within maxDistance.");
+            //     return Vector3.zero;
+            // }
+        }
+        public float TankHealthCu()
+        {
+            return tankHealthCurr.HealthSlider.value;
         }
     }
 }

@@ -183,7 +183,7 @@ namespace CE6127.Tanks.AI
             Rigidbody shellInstance = Instantiate(Shell, FireTransform.position, FireTransform.rotation) as Rigidbody;
 
             // Set the shell's velocity to the launch force in the fire position's forward direction.
-            shellInstance.velocity = m_CurrentLaunchForce * FireTransform.forward; ;
+            shellInstance.velocity = m_CurrentLaunchForce * FireTransform.forward; 
 
             // Change the clip to the firing clip and play it.
             SFXAudioSource.clip = ShotFiringAudioClip;

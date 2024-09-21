@@ -9,7 +9,7 @@ namespace CE6127.Tanks.AI
     /// <summary>
     /// Class <c>PatrollingState</c> represents the state of the tank when it is patrolling.
     /// </summary>
-    internal class PatrollingState : BaseState
+    internal class RunawayState : BaseState
     {
         private TankSM m_TankSM;        // Reference to the tank state machine.
         private Vector3 m_Destination;  // Destination for the tank to move to.
@@ -17,7 +17,7 @@ namespace CE6127.Tanks.AI
         /// <summary>
         /// Constructor <c>PatrollingState</c> constructor.
         /// </summary>
-        public PatrollingState(TankSM tankStateMachine) : base("Patrolling", tankStateMachine) => m_TankSM = (TankSM)m_StateMachine;
+        public RunawayState(TankSM tankStateMachine) : base("Runaway", tankStateMachine) => m_TankSM = (TankSM)m_StateMachine;
 
         /// <summary>
         /// Method <c>Enter</c> on enter.
@@ -28,7 +28,7 @@ namespace CE6127.Tanks.AI
 
             m_TankSM.SetStopDistanceToZero();
 
-            m_TankSM.StartCoroutine(Patrolling());
+            m_TankSM.StartCoroutine(Runaway());
         }
 
         /// <summary>
@@ -36,22 +36,21 @@ namespace CE6127.Tanks.AI
         /// </summary>
         public override void Update()
         {
-            // Debug.Log("Helooooo"+ m_TankSM.Target.position);
             base.Update();
-            if (m_TankSM.Target != null)
-            {
-                var dist = Vector3.Distance(m_TankSM.transform.position, m_TankSM.Target.position);
-                if (dist <= m_TankSM.StopDistance) // ... Obviously this doesn't make much sense, but it's just for demonstration purposes.
-                    m_StateMachine.ChangeState(m_TankSM.m_States.Attack);
-                else if (dist > m_TankSM.TargetDistance)
-                    m_StateMachine.ChangeState(m_TankSM.m_States.Patrolattack);
-            }
+            // if (m_TankSM.Target != null)
+            // {
+            //     var dist = Vector3.Distance(m_TankSM.transform.position, m_TankSM.Target.position);
+            //     if (dist <= m_TankSM.StopDistance) // ... Obviously this doesn't make much sense, but it's just for demonstration purposes.
+            //         m_StateMachine.ChangeState(m_TankSM.m_States.Attack);
+            // }
 
             if (Time.time >= m_TankSM.NavMeshUpdateDeadline)
             {
-                m_TankSM.NavMeshUpdateDeadline = Time.time + m_TankSM.PatrolNavMeshUpdate;                
+                m_TankSM.NavMeshUpdateDeadline = Time.time + m_TankSM.PatrolNavMeshUpdate;
+                
                 m_TankSM.NavMeshAgent.SetDestination(m_Destination);
             }
+            //Debug.Log("State Achieved runawayyyyy");
         }
 
         /// <summary>
@@ -61,18 +60,20 @@ namespace CE6127.Tanks.AI
         {
             base.Exit();
 
-            m_TankSM.StopCoroutine(Patrolling());
+            m_TankSM.StopCoroutine(Runaway());
         }
 
         /// <summary>
         /// Coroutine <c>Patrolling</c> patrolling coroutine.
         /// </summary>
-        IEnumerator Patrolling()
+        IEnumerator Runaway()
         {
             while (true)
             {
-                m_Destination = m_TankSM.Target.position;
-                float waitInSec = Mathf.Min(m_TankSM.PatrolWaitTime.x, m_TankSM.PatrolWaitTime.y);
+                var destination = Random.insideUnitCircle * Mathf.Max(m_TankSM.PatrolMaxDist.x*5.0f, m_TankSM.PatrolMaxDist.y*5.0f);
+                m_Destination = m_TankSM.transform.position + new Vector3(destination.x, 0f, destination.y);
+
+                float waitInSec = Random.Range(m_TankSM.PatrolWaitTime.x, m_TankSM.PatrolWaitTime.y);
                 yield return new WaitForSeconds(0.1f);
             }
         }
