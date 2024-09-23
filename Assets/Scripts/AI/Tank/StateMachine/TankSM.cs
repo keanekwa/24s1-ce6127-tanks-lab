@@ -125,7 +125,7 @@ namespace CE6127.Tanks.AI
             SetNavMeshAgent();
 
             TargetDistance = Mathf.Min(StartToTargetDist.x, StartToTargetDist.y);
-            StopDistance = Mathf.Min(StopAtTargetDist.x, StopAtTargetDist.y);
+            StopDistance = Mathf.Max(StopAtTargetDist.x, StopAtTargetDist.y);
 
             SetStopDistanceToTarget();
 

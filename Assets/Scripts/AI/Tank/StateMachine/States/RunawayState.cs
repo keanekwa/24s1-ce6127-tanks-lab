@@ -13,6 +13,7 @@ namespace CE6127.Tanks.AI
     {
         private TankSM m_TankSM;        // Reference to the tank state machine.
         private Vector3 m_Destination;  // Destination for the tank to move to.
+        private float timer = 0;
 
         /// <summary>
         /// Constructor <c>PatrollingState</c> constructor.
@@ -49,6 +50,30 @@ namespace CE6127.Tanks.AI
                 m_TankSM.NavMeshUpdateDeadline = Time.time + m_TankSM.PatrolNavMeshUpdate;
                 
                 m_TankSM.NavMeshAgent.SetDestination(m_Destination);
+            }
+            var lookPos = m_TankSM.Target.position - m_TankSM.transform.position;
+            lookPos.y = 0f;
+            var rot = Quaternion.LookRotation(lookPos);
+            m_TankSM.transform.rotation = Quaternion.Slerp(m_TankSM.transform.rotation, rot, m_TankSM.OrientSlerpScalar);
+
+
+            var distanceTarget = Mathf.Sqrt(Mathf.Pow(m_TankSM.Target.position.x - m_TankSM.transform.position.x,2)+Mathf.Pow(m_TankSM.Target.position.z - m_TankSM.transform.position.z,2));
+            
+            //Debug.Log("Tank position"+distanceTarget+"or"+m_TankSM.TargetDistance);
+            var force = 2.3f + (18.5f*distanceTarget/22.0f);
+            force = Mathf.Min(Mathf.Max(force,m_TankSM.LaunchForceMinMax.x),m_TankSM.LaunchForceMinMax.y);
+            //Debug.Log("Tank force"+distanceTarget);
+            var forceProj = force;
+            var timeCool = 0.2f + (1.8f*forceProj/23.5f);
+            if (timer < timeCool)
+            {
+                timer += Time.deltaTime;
+                
+            }
+            else
+            {
+                m_TankSM.LaunchProjectile(forceProj);
+                timer = 0;
             }
             //Debug.Log("State Achieved runawayyyyy");
         }

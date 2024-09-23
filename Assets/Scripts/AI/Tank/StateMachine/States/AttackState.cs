@@ -43,7 +43,7 @@ namespace CE6127.Tanks.AI
                     m_StateMachine.ChangeState(m_TankSM.m_States.Patrolling);
                 else if (dist > m_TankSM.StopDistance)
                     m_StateMachine.ChangeState(m_TankSM.m_States.Patrolattack);
-                else if (currHealth <= 15)
+                else if (currHealth <= 20)
                     m_StateMachine.ChangeState(m_TankSM.m_States.Runaway);
                 // ... Just for demonstration purposes; more to be implemented.
             }
